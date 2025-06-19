@@ -6,6 +6,16 @@ spring:
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 6000ms
+
 
 translator:
   external:
@@ -14,3 +24,4 @@ translator:
 
 server:
   port: 8080
+
