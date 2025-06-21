@@ -19,8 +19,14 @@ spring:
 
 translator:
   external:
-    api-url: https://api.example.com/translate
+    api-url: https://api-free.deepl.com/v2/translate
     api-key: ${EXTERNAL_API_KEY}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    com.amadeomartell: DEBUG
 
 server:
   port: 8080

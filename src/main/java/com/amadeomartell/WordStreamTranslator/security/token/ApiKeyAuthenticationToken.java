@@ -6,28 +6,40 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 public class ApiKeyAuthenticationToken extends AbstractAuthenticationToken {
-    private final String apiKey;
+
+    private final Object principal;
+    private final Object credentials;
 
     public ApiKeyAuthenticationToken(String apiKey) {
         super(null);
-        this.apiKey = apiKey;
-        setAuthenticated(false);
+        this.principal = null;
+        this.credentials = apiKey;
+        super.setAuthenticated(false);
     }
 
-    public ApiKeyAuthenticationToken(String apiKey,
-                                     Collection<? extends GrantedAuthority> authorities) {
+    public ApiKeyAuthenticationToken(String apiKey, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
-        this.apiKey = apiKey;
+        this.principal = apiKey;
+        this.credentials = apiKey;
         super.setAuthenticated(true);
     }
 
     @Override
     public Object getCredentials() {
-        return apiKey;
+        return credentials;
     }
 
     @Override
     public Object getPrincipal() {
-        return apiKey;
+        return principal;
+    }
+
+    @Override
+    public void setAuthenticated(boolean isAuthenticated) {
+        if (isAuthenticated) {
+            throw new IllegalArgumentException(
+                    "Use constructor with authorities to create authenticated instance");
+        }
+        super.setAuthenticated(false);
     }
 }

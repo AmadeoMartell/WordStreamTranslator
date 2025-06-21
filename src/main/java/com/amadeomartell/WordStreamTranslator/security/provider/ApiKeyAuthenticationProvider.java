@@ -2,18 +2,18 @@ package com.amadeomartell.WordStreamTranslator.security.provider;
 
 import com.amadeomartell.WordStreamTranslator.repository.ApiKeyRepository;
 import com.amadeomartell.WordStreamTranslator.security.token.ApiKeyAuthenticationToken;
-import org.springframework.cache.annotation.Cacheable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@Slf4j
 public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
 
     private final ApiKeyRepository repo;
@@ -23,14 +23,18 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    @Cacheable("apiKeys")
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String key = authentication.getCredentials().toString();
-        if (!repo.existsByKey(key)) {
+        String apiKey = authentication.getCredentials().toString();
+        log.info("Authenticating API key: {}", apiKey);
+
+        if (!repo.existsByKey(apiKey)) {
             throw new BadCredentialsException("API Key not found");
         }
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
-        return new ApiKeyAuthenticationToken(key, authorities);
+
+        return new ApiKeyAuthenticationToken(
+                apiKey,
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
     }
 
     @Override
